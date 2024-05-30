@@ -1,8 +1,20 @@
-import { Controller, Get, Post, Query, Param, Header, HttpCode, HttpRedirectResponse, Redirect } from '@nestjs/common'
-// import { Request, Response } from 'express'
+import { Controller, Get, Post, Req, Res, Query, Param, Header, HttpCode, HttpRedirectResponse, Redirect } from '@nestjs/common'
+import { Request, Response } from 'express'
 
 @Controller('/api/users')
 export class UserController {
+  @Get('/set-cookie')
+  setCookie(@Query('name') name: string, @Res() response: Response) {
+    response.cookie('name', name)
+    response.status(200).send('Success Set Cookie')
+  }
+
+  @Get('/get-cookie')
+  getCookie(@Req() request: Request): string {
+    return request.cookies['name']
+  }
+
+
   @Get('/sample-response')
   @Header('Content-Type', 'application/json')
   @HttpCode(200)
@@ -32,10 +44,10 @@ export class UserController {
   }
 
   @Get('/hello')
-  sayHello(
+  async sayHello(
     @Query('firstname') firstName:string,
     @Query('lastname') lastName: string
-  ): string {
+  ): Promise<string> {
     return `Hello ${firstName} ${lastName}`
   }
 
