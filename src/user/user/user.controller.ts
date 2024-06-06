@@ -1,11 +1,28 @@
-import { Controller, Get, Post, Req, Res, Query, Param, Header, HttpCode, HttpRedirectResponse, Redirect } from '@nestjs/common'
+import { Controller, Get, Post, Req, Res, Query, Param, Header, HttpCode, HttpRedirectResponse, Redirect, Inject } from '@nestjs/common'
 import { Request, Response } from 'express'
 import { UserService } from './user.service'
+import { Connection } from '../connection/connection'
+import { MailService } from '../mail/mail.service'
+import { UserRepository } from '../user-repository/user-repository'
 
 @Controller('/api/users')
 export class UserController {
-  constructor(private service: UserService) {}
+  constructor(
+    private service: UserService,
+    private connection: Connection,
+    private mailService: MailService,
+    @Inject('EmailService') private emailService: MailService,
+    private userRepository: UserRepository
+  ) {}
   
+  @Get('/connection')
+  async getConnection(): Promise<string> {
+    this.userRepository.save()
+    this.mailService.send()
+    this.emailService.send()
+    return this.connection.getName()
+  }
+
   // @Inject()
   // @Optional() -- when added, when the service is not used, there is no error
   // private userService: UserService
