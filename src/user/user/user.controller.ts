@@ -6,6 +6,10 @@ import { UserService } from './user.service'
 export class UserController {
   constructor(private service: UserService) {}
   
+  // @Inject()
+  // @Optional() -- when added, when the service is not used, there is no error
+  // private userService: UserService
+
   @Get('/hello')
   async sayHello(@Query('name') name: string): Promise<string> {
     return this.service.sayHello(name)
