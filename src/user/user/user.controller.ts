@@ -1,8 +1,24 @@
 import { Controller, Get, Post, Req, Res, Query, Param, Header, HttpCode, HttpRedirectResponse, Redirect } from '@nestjs/common'
 import { Request, Response } from 'express'
+import { UserService } from './user.service'
 
 @Controller('/api/users')
 export class UserController {
+  constructor(private service: UserService) {}
+  
+  @Get('/hello')
+  async sayHello(@Query('name') name: string): Promise<string> {
+    return this.service.sayHello(name)
+  }
+
+  // @Get('/hello')
+  // async sayHello(
+  //   @Query('firstname') firstName:string,
+  //   @Query('lastname') lastName: string
+  // ): Promise<string> {
+  //   return `Hello ${firstName} ${lastName}`
+  // }
+
   @Get('/view/hello')
   viewHello(@Query('name') name: string, @Res() response: Response) {
     response.render('index.html', {
@@ -21,7 +37,6 @@ export class UserController {
   getCookie(@Req() request: Request): string {
     return request.cookies['name']
   }
-
 
   @Get('/sample-response')
   @Header('Content-Type', 'application/json')
@@ -49,14 +64,6 @@ export class UserController {
   @Get('/sample')
   get(): string {
     return 'GET'
-  }
-
-  @Get('/hello')
-  async sayHello(
-    @Query('firstname') firstName:string,
-    @Query('lastname') lastName: string
-  ): Promise<string> {
-    return `Hello ${firstName} ${lastName}`
   }
 
   // @Get('/:id')
