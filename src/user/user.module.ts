@@ -30,6 +30,7 @@ import { ConfigService } from '@nestjs/config'
       inject: [Connection]
     },
     MemberService
-  ]
+  ],
+  exports: [UserService]
 })
 export class UserModule {}
