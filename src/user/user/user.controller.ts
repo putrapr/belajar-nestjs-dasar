@@ -12,7 +12,9 @@ import { ValidationPipe } from 'src/validation/validation.pipe'
 import { TimeInterceptor } from 'src/time/time.interceptor'
 import { Auth } from 'src/auth/auth.decorator'
 import { RoleGuard } from 'src/role/role.guard'
+import { Roles } from 'src/role/roles.decorator'
 
+@UseGuards(RoleGuard)
 @Controller('/api/users')
 export class UserController {
   constructor(
@@ -24,8 +26,8 @@ export class UserController {
     private memberService: MemberService
   ) {}
 
-  @Get('/current')
-  @UseGuards(new RoleGuard(['admin', 'operator']))
+  @Get('/current')  
+  @Roles(['admin', 'operator'])
   current(@Auth() user: User): Record<string, any> {
     return {
       data: `Hello ${user.first_name} ${user.last_name}`
