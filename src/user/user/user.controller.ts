@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, Res, Query, Param, Header, HttpCode, HttpRedirectResponse, Redirect, Inject, UseFilters, HttpException, Body } from '@nestjs/common'
+import { Controller, Get, Post, Req, Res, Query, Param, Header, HttpCode, HttpRedirectResponse, Redirect, Inject, UseFilters, HttpException, Body, UsePipes, UseInterceptors } from '@nestjs/common'
 import { Request, Response } from 'express'
 import { UserService } from './user.service'
 import { Connection } from '../connection/connection'
@@ -9,6 +9,7 @@ import { User } from '@prisma/client'
 import { ValidationFilter } from 'src/validation/validation.filter'
 import { LoginUserRequest, loginUserRequestValidation } from 'src/model/login.model'
 import { ValidationPipe } from 'src/validation/validation.pipe'
+import { TimeInterceptor } from 'src/time/time.interceptor'
 
 @Controller('/api/users')
 export class UserController {
@@ -21,11 +22,19 @@ export class UserController {
     private memberService: MemberService
   ) {}
 
+  @UsePipes(new ValidationPipe(loginUserRequestValidation))
   @UseFilters(ValidationFilter)
   @Post('/login')
-  login(@Body(new ValidationPipe(loginUserRequestValidation))
-    request: LoginUserRequest
-  ) { return 'Hello '+request.username }
+  @Header('Content-Type', 'application/json')
+  @UseInterceptors(TimeInterceptor)
+  login(
+    @Query('name') name: string, 
+    @Body() request: LoginUserRequest
+  ){ 
+    return {
+      data: 'Hello '+request.username
+    } 
+  }
 
   @Get('/create')
   async create(
